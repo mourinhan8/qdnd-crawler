@@ -4,6 +4,10 @@ from crawler import crawler, get_content
 from fastapi.middleware.cors import CORSMiddleware
 import datetime
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = fastapi.FastAPI()
 
@@ -24,8 +28,8 @@ async def get_api_token():
         "X-Requested-With": "XMLHttpRequest"
     }
     data = {
-        "userNameOrEmailAddress": "admin",
-        "password": "Mitech28@03",
+        "userNameOrEmailAddress": os.environ.get("ADMIN_USERNAME"),
+        "password": os.environ.get("ADMIN_PASSWORD"),
         "rememberMe": True
     }
     response = requests.post(url, headers=headers, json=data)
@@ -38,7 +42,7 @@ async def get_api_token():
 
 
 @app.get("/")
-async def root():
+async def crawl_and_post():
     urls = crawler()
     data = get_content(urls[0])
     return {
